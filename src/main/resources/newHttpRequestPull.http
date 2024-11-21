@@ -1,0 +1,22 @@
+### POST
+POST localhost:8081/api/marina/crateMarina HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "boobSize": "BIG",
+  "mood": "HAPPY",
+  "age": 27,
+  "lastName": "Kamneva"
+}
+
+### POST
+POST localhost:8081/api/marina/createString HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": "1",
+  "context": "popa"
+}
+
+
