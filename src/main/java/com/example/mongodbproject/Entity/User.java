@@ -1,32 +1,26 @@
 package com.example.mongodbproject.Entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(collection = "marina")
-@NoArgsConstructor
-@AllArgsConstructor
+@Document(collection = "users")
 @Getter
 @Setter
-public class Marina{
+@ToString
+@NoArgsConstructor
+public class User {
+
     @Id
     private String id;
 
-    @Field(name = "boobSize")
     @Indexed(unique = true)
-    private BoobsSize boobs;
+    private String login;
 
-    @Indexed(unique = true)
-    private Mood mood;
-
-    @Field(name = "age")
-    private Integer age;
-
-    private String lastName;
+    private String password;
 }
