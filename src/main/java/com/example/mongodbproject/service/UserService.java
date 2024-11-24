@@ -15,12 +15,12 @@ public class UserService {
 
     public String responseMassage = "";
 
-    public String saveUser(User user) {
-        try {
-            responseMassage = userRepository.save(user).toString();
-        }catch (MongoWriteException e){
-            return "This login already exist!";
-        }
-        return responseMassage;
+    public String saveUser(User userLoginData) {
+        return userRepository.insert(userLoginData).toString();
+
+    }
+
+    public String login(User userLoginData) {
+        return userRepository.findByLogin(userLoginData).toString();
     }
 }

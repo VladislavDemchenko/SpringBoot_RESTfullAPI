@@ -18,7 +18,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> create(@RequestBody User user){
-        return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
+    public ResponseEntity<?> create(@RequestBody User userRegisterData){
+        return new ResponseEntity<>(userService.saveUser(userRegisterData), HttpStatus.CREATED);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User userLoginData){
+        return new ResponseEntity<>(userService.login(userLoginData), HttpStatus.ACCEPTED);
     }
 }
