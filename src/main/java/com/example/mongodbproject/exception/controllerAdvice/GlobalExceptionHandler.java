@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleInvalidRequestMongoWriteException(MongoWriteException ex){
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "This login already exist");
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler

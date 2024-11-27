@@ -1,4 +1,6 @@
 package com.example.mongodbproject.dto;
 
-public record UserDto(String login, String password) {
+import java.io.Serializable;
+
+public record UserDto(String login, String password) implements Serializable {
 }

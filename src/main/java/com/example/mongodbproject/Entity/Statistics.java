@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
-@RedisHash("Statistic")
+//@RedisHash("Statistic")
 public class Statistics {
     @Id
     private String id;

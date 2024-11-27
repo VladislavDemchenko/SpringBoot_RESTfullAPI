@@ -10,7 +10,7 @@ public class ScheduledTask {
     @Autowired
     private StatisticsService statisticsService;
 
-    @Scheduled(fixedRate = 300000)  // Оновлення кожні 5 хвилин
+//    @Scheduled(fixedRate = 300000)  // Оновлення кожні 5 хвилин
     public void updateStatistics() {
         try {
             statisticsService.loadStatisticsFromFile(); // Оновлюємо статистику
