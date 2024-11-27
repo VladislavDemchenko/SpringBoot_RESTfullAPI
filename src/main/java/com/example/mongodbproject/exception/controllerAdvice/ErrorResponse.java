@@ -1,13 +1,11 @@
-package com.example.mongodbproject.exeprion;
+package com.example.mongodbproject.exception.controllerAdvice;
 
 import lombok.*;
 
-import javax.swing.*;
-
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ErrorResponse {
     private int status;
     private String message;

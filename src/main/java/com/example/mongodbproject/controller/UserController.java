@@ -22,7 +22,7 @@ public class UserController {
         return new ResponseEntity<>(userService.saveUser(userRegisterData), HttpStatus.CREATED);
     }
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User userLoginData){
-        return new ResponseEntity<>(userService.login(userLoginData), HttpStatus.ACCEPTED);
+    public ResponseEntity<?> login(@RequestBody User userRequestArgs){
+        return new ResponseEntity<>(userService.login(userRequestArgs), HttpStatus.ACCEPTED);
     }
 }

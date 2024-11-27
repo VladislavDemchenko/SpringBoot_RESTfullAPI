@@ -1,26 +1,31 @@
 package com.example.mongodbproject.service;
 
 import com.example.mongodbproject.Entity.User;
+import com.example.mongodbproject.dto.UserDto;
+import com.example.mongodbproject.exception.IncorrectPasswordException;
 import com.example.mongodbproject.repository.UserRepository;
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.MongoWriteException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
-    public String responseMassage = "";
-
     public String saveUser(User userLoginData) {
-        return userRepository.insert(userLoginData).toString();
-
+        return userRepository.save(userLoginData).toString();
     }
 
-    public String login(User userLoginData) {
-        return userRepository.findByLogin(userLoginData).toString();
+    public UserDto login(User userRequestArgs) {
+        UserDto userDto = userRepository.findByLogin(userRequestArgs.getLogin())
+                .orElseThrow(() -> new NoSuchElementException("User with login - [" + userRequestArgs.getLogin() + "] not found"));
+
+        if(!userDto.password().equals(userRequestArgs.getPassword())){
+            throw new IncorrectPasswordException("Password is incorrect");
+        }
+
+        return userDto;
     }
 }

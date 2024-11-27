@@ -3,23 +3,19 @@ package com.example.mongodbproject.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.redis.core.RedisHash;
 
-@Document(collection = "users")
+import java.util.Map;
+
+@Document(collation = "statistic")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
-public class User {
-
+@RedisHash("Statistic")
+public class Statistics {
     @Id
     private String id;
-
-    @Indexed(unique = true)
-    private String login;
-
-    private String password;
+    private Map<String, Object> data;
 }
