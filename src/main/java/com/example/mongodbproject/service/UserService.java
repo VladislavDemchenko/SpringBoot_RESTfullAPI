@@ -3,6 +3,7 @@ package com.example.mongodbproject.service;
 import com.example.mongodbproject.Entity.User;
 import com.example.mongodbproject.dto.UserDto;
 import com.example.mongodbproject.exception.IncorrectPasswordException;
+import com.example.mongodbproject.mongo.repository.TemporaryDataRepository;
 import com.example.mongodbproject.mongo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,8 +16,11 @@ import java.util.NoSuchElementException;
 public class UserService {
     private final UserRepository userRepository;
 
-    public String saveUser(User userLoginData) {
-        return userRepository.save(userLoginData).toString();
+    private final TemporaryDataRepository temporaryDataRepository;
+
+    public String saveUser(String token) {
+        System.out.println(temporaryDataRepository.findUserByToken(token));
+        return userRepository.save(temporaryDataRepository.findUserByToken(token)).toString();
     }
 
     @Cacheable(value = "users", key = "#userRequestArgs.login")
@@ -29,5 +33,9 @@ public class UserService {
         }
 
         return userDto;
+    }
+
+    public String updateUserPasswordByEmail(String email, String newPassword) {
+        return null;
     }
 }
