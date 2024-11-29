@@ -1,9 +1,6 @@
 package com.example.mongodbproject.Entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -27,4 +24,10 @@ public class User implements Serializable {
     
     @Indexed(unique = true)
     private String email;
+
+    public User (String login, String password, String email){
+        this.login = login;
+        this.password = password;
+        this.email = email;
+    }
 }

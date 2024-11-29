@@ -16,17 +16,15 @@ import java.util.NoSuchElementException;
 public class UserService {
     private final UserRepository userRepository;
 
-    private final TemporaryDataRepository temporaryDataRepository;
 
-    public String saveUser(String token) {
-        System.out.println(temporaryDataRepository.findUserByToken(token));
-        return userRepository.save(temporaryDataRepository.findUserByToken(token)).toString();
+    public void save(User user) {
+        userRepository.save(user);
     }
 
     @Cacheable(value = "users", key = "#userRequestArgs.login")
     public UserDto login(User userRequestArgs) {
         UserDto userDto = userRepository.findByLogin(userRequestArgs.getLogin())
-                .orElseThrow(() -> new NoSuchElementException("User with login - [" + userRequestArgs.getLogin() + "] not found"));
+                .orElseThrow(() -> new NoSuchElementException("Login or email is not valid"));
 
         if(!userDto.password().equals(userRequestArgs.getPassword())){
             throw new IncorrectPasswordException("Password is incorrect");
@@ -38,4 +36,5 @@ public class UserService {
     public String updateUserPasswordByEmail(String email, String newPassword) {
         return null;
     }
+
 }

@@ -19,10 +19,11 @@ public class EmailVerificationController {
     @GetMapping("/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam String token) {
         if (verificationService.validateToken(token)) {
-            String message = userService.saveUser(token);
+
+            userService.save(verificationService.findUserByToken(token));
             verificationService.deleteToken(token);
 
-            return new ResponseEntity<>(message, HttpStatus.CREATED);
+            return new ResponseEntity<>("Verification successfully", HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>("Invalid Verification code", HttpStatus.BAD_REQUEST);
         }
