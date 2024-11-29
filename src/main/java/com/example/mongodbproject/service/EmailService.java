@@ -14,8 +14,8 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendVerificationEmail(String to, String token) {
-        String confirmationLink = "http://localhost:8080/api/verify-email?token=" + token;
+    public void sendVerificationEmail(String to, String token, String method) {
+        String confirmationLink = "http://localhost:8080/api/"+method+"/verify-email?token=" + token;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Email Verification");

@@ -16,11 +16,23 @@ public class EmailVerificationController {
 
     private final UserService userService;
 
-    @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam String token) {
+    @GetMapping("save/verify-email")
+    public ResponseEntity<?> saveVerifyEmail(@RequestParam String token) {
         if (verificationService.validateToken(token)) {
 
             userService.save(verificationService.findUserByToken(token));
+            verificationService.deleteToken(token);
+
+            return new ResponseEntity<>("Verification successfully", HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("Invalid Verification code", HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("updatePassword/verify-email")
+    public ResponseEntity<?> updatePasswordVerifyEmail(@RequestParam String token) {
+        if (verificationService.validateToken(token)) {
+
+            userService.save(verificationService.findUserByToken(token)); // not polimorff
             verificationService.deleteToken(token);
 
             return new ResponseEntity<>("Verification successfully", HttpStatus.CREATED);

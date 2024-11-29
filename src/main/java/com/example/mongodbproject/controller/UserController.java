@@ -16,19 +16,26 @@ public class UserController {
     private final UserService userService;
 
     private final TemporaryDataServer temporaryDataServer;
+
     @PostMapping("/register")
     public ResponseEntity<?> create(@RequestBody User userRegisterData){
 
-        temporaryDataServer.saveTemporaryData(userRegisterData);
+        temporaryDataServer.saveTemporaryData(userRegisterData, "save");
+        temporaryDataServer.checkForUniqueValue(userRegisterData);
 
         return new ResponseEntity<>("Pre-verification data saved", HttpStatus.ACCEPTED);
     }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User userRequestArgs){
         return new ResponseEntity<>(userService.login(userRequestArgs), HttpStatus.ACCEPTED);
     }
-    @PutMapping
-    public ResponseEntity<?> updateUserPasswordByEmail(@RequestParam String email, String newPassword){
-        return new ResponseEntity<>(userService.updateUserPasswordByEmail(email, newPassword), HttpStatus.ACCEPTED);
+
+    @PutMapping("/updatePassword")
+    public ResponseEntity<?> updatePassword(@RequestParam String email, @RequestParam String newPassword){
+
+        temporaryDataServer.saveTemporaryData(new User(email, newPassword), "updatePassword");
+        //return not found email exception before verification
+        return new ResponseEntity<>("Pre-verification data saved", HttpStatus.ACCEPTED);
     }
 }

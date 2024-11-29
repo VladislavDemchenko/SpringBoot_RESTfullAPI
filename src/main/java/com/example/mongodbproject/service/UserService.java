@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
+    private final TemporaryDataServer temporaryDataServer;
 
     public void save(User user) {
         userRepository.save(user);
@@ -33,8 +33,13 @@ public class UserService {
         return userDto;
     }
 
+    @Cacheable(value = "email", key = "#email")
     public String updateUserPasswordByEmail(String email, String newPassword) {
-        return null;
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email is unverified"));
+        user.setPassword(newPassword);
+        this.save(user);
+        return "Successfully updated";
     }
 
 }

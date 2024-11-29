@@ -42,8 +42,24 @@ public class TemporaryDataServer {
         tokenRepository.findByToken(token)
                 .ifPresent(tokenRepository::delete);
     }
+
     @Transactional
-    public void saveTemporaryData(User user) {
+    public void saveTemporaryData(User user, String method) {
+
+
+        // Create new token
+        TemporaryMemory temporaryMemory = new TemporaryMemory(generateVerificationToken(),
+                LocalDateTime.now().plusHours(24),
+                user);
+
+        emailService.sendVerificationEmail(temporaryMemory.getUser().getEmail(),
+                temporaryMemory.getToken(), method);
+
+        // Зберігаємо токен у базі
+        tokenRepository.save(temporaryMemory);
+    }
+
+    public void checkForUniqueValue(User user){
         // check for unique email and login before verification
         if (userRepository.findByLogin(user.getLogin()).isPresent()) {
             throw new IllegalArgumentException("Login already exists");
@@ -51,15 +67,5 @@ public class TemporaryDataServer {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already exists");
         }
-
-        // Create new token
-        TemporaryMemory temporaryMemory = new TemporaryMemory(generateVerificationToken(),
-                LocalDateTime.now().plusHours(24),
-                user);
-
-        emailService.sendVerificationEmail(temporaryMemory.getUser().getEmail(), temporaryMemory.getToken());
-
-        // Зберігаємо токен у базі
-        tokenRepository.save(temporaryMemory);
     }
 }

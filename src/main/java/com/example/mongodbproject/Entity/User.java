@@ -25,8 +25,8 @@ public class User implements Serializable {
     @Indexed(unique = true)
     private String email;
 
-    public User (String login, String password, String email){
-        this.login = login;
+    public User (String password, String email){
+
         this.password = password;
         this.email = email;
     }
