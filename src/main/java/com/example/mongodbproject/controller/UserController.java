@@ -1,7 +1,7 @@
 package com.example.mongodbproject.controller;
 
 import com.example.mongodbproject.Entity.User;
-import com.example.mongodbproject.service.TemporaryDataServer;
+import com.example.mongodbproject.service.TemporaryDataService;
 import com.example.mongodbproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,13 +15,13 @@ public class UserController {
 
     private final UserService userService;
 
-    private final TemporaryDataServer temporaryDataServer;
+    private final TemporaryDataService temporaryDataService;
 
     @PostMapping("/register")
     public ResponseEntity<?> create(@RequestBody User userRegisterData){
 
-        temporaryDataServer.saveTemporaryData(userRegisterData, "save");
-        temporaryDataServer.checkForUniqueValue(userRegisterData);
+        temporaryDataService.handleValidUniqueLoginAndEmail(userRegisterData.getLogin(), userRegisterData.getEmail());
+        temporaryDataService.saveTemporaryData(userRegisterData, "save");
 
         return new ResponseEntity<>("Pre-verification data saved", HttpStatus.ACCEPTED);
     }
@@ -31,11 +31,13 @@ public class UserController {
         return new ResponseEntity<>(userService.login(userRequestArgs), HttpStatus.ACCEPTED);
     }
 
+    //todo: test it
     @PutMapping("/updatePassword")
-    public ResponseEntity<?> updatePassword(@RequestParam String email, @RequestParam String newPassword){
+    public ResponseEntity<?> updatePassword(@RequestParam String newPassword, @RequestParam String email){
 
-        temporaryDataServer.saveTemporaryData(new User(email, newPassword), "updatePassword");
-        //return not found email exception before verification
+        temporaryDataService.foundEmail(email);
+        temporaryDataService.saveTemporaryData(new User(email, newPassword), "updatePassword");
+
         return new ResponseEntity<>("Pre-verification data saved", HttpStatus.ACCEPTED);
     }
 }

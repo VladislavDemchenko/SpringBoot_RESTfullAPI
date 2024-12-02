@@ -1,6 +1,7 @@
 package com.example.mongodbproject.controller;
 
-import com.example.mongodbproject.service.TemporaryDataServer;
+import com.example.mongodbproject.Entity.User;
+import com.example.mongodbproject.service.TemporaryDataService;
 import com.example.mongodbproject.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class EmailVerificationController {
 
-    private final TemporaryDataServer verificationService;
+    private final TemporaryDataService verificationService;
 
     private final UserService userService;
 
@@ -23,7 +24,7 @@ public class EmailVerificationController {
             userService.save(verificationService.findUserByToken(token));
             verificationService.deleteToken(token);
 
-            return new ResponseEntity<>("Verification successfully", HttpStatus.CREATED);
+            return new ResponseEntity<>("Verification successfully" , HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>("Invalid Verification code", HttpStatus.BAD_REQUEST);
         }
@@ -31,8 +32,13 @@ public class EmailVerificationController {
     @GetMapping("updatePassword/verify-email")
     public ResponseEntity<?> updatePasswordVerifyEmail(@RequestParam String token) {
         if (verificationService.validateToken(token)) {
+            ////////// refactor to extract method like in book catalog
 
-            userService.save(verificationService.findUserByToken(token)); // not polimorff
+            User user = verificationService.findUserByToken(token);
+
+            userService.updateUserPasswordByEmail(user.getEmail(),
+                    user.getPassword());
+
             verificationService.deleteToken(token);
 
             return new ResponseEntity<>("Verification successfully", HttpStatus.CREATED);
@@ -40,5 +46,7 @@ public class EmailVerificationController {
             return new ResponseEntity<>("Invalid Verification code", HttpStatus.BAD_REQUEST);
         }
     }
+
+
 }
 

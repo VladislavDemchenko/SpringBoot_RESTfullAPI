@@ -3,7 +3,6 @@ package com.example.mongodbproject.service;
 import com.example.mongodbproject.Entity.User;
 import com.example.mongodbproject.dto.UserDto;
 import com.example.mongodbproject.exception.IncorrectPasswordException;
-import com.example.mongodbproject.mongo.repository.TemporaryDataRepository;
 import com.example.mongodbproject.mongo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,16 +14,15 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final TemporaryDataServer temporaryDataServer;
 
     public void save(User user) {
         userRepository.save(user);
     }
 
-    @Cacheable(value = "users", key = "#userRequestArgs.login")
+    @Cacheable(value = "userByLogin", key = "#userRequestArgs.login")
     public UserDto login(User userRequestArgs) {
-        UserDto userDto = userRepository.findByLogin(userRequestArgs.getLogin())
-                .orElseThrow(() -> new NoSuchElementException("Login or email is not valid"));
+        UserDto userDto = castToUserDto(userRepository.findByLogin(userRequestArgs.getLogin())
+                .orElseThrow(() -> new NoSuchElementException("Login or email is not valid")));
 
         if(!userDto.password().equals(userRequestArgs.getPassword())){
             throw new IncorrectPasswordException("Password is incorrect");
@@ -33,13 +31,20 @@ public class UserService {
         return userDto;
     }
 
-    @Cacheable(value = "email", key = "#email")
-    public String updateUserPasswordByEmail(String email, String newPassword) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Email is unverified"));
+    public void updateUserPasswordByEmail(String email, String newPassword) {
+        User user = getUserByEmail(email);
         user.setPassword(newPassword);
         this.save(user);
-        return "Successfully updated";
     }
 
+
+    @Cacheable(value = "usersCache", key = "#email")
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Email is unverified"));
+    }
+    //todo: think about logic of method login - with cast in Class or cast in repository
+    public UserDto castToUserDto(User user){
+        return new UserDto(user.getLogin(), user.getPassword(), user.getEmail());
+    }
 }

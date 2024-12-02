@@ -3,27 +3,25 @@ package com.example.mongodbproject.service;
 import com.example.mongodbproject.Entity.TemporaryMemory;
 import com.example.mongodbproject.Entity.User;
 import com.example.mongodbproject.mongo.repository.TemporaryDataRepository;
-import com.example.mongodbproject.mongo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class TemporaryDataServer {
+public class TemporaryDataService {
     private final TemporaryDataRepository tokenRepository;
     private final EmailService emailService;
-    private final UserRepository userRepository;
+    private final UserValidator userValidator;
 
     public String generateVerificationToken() {
        return UUID.randomUUID().toString();
     }
 
-    @Cacheable(value = "token", key = "#token")
+    @Cacheable(value = "validToken", key = "#token")
     public boolean validateToken(String token) {
         // Знаходимо токен у базі
         return tokenRepository.findByToken(token)
@@ -33,20 +31,22 @@ public class TemporaryDataServer {
     @Cacheable(value = "token", key = "#token")
     public User findUserByToken(String token) {
         return tokenRepository.findByToken(token)
-                .orElseThrow()
+                .orElseThrow(() -> new IllegalArgumentException("token out of timeline ")) // verification code are done for time
                 .getUser();
     }
 
-
+    @Cacheable(value = "token", key = "#token")
     public void deleteToken(String token) {
         tokenRepository.findByToken(token)
                 .ifPresent(tokenRepository::delete);
     }
+/// ///////////////////////////////////refact every methods with all findByToken
+//    @Cacheable(value = "token", key = "#token")
+//    public TemporaryMemory findByToken(String token){
+//        return tokenRepository.findByToken(token);
+//    }
 
-    @Transactional
     public void saveTemporaryData(User user, String method) {
-
-
         // Create new token
         TemporaryMemory temporaryMemory = new TemporaryMemory(generateVerificationToken(),
                 LocalDateTime.now().plusHours(24),
@@ -58,14 +58,12 @@ public class TemporaryDataServer {
         // Зберігаємо токен у базі
         tokenRepository.save(temporaryMemory);
     }
-
-    public void checkForUniqueValue(User user){
-        // check for unique email and login before verification
-        if (userRepository.findByLogin(user.getLogin()).isPresent()) {
-            throw new IllegalArgumentException("Login already exists");
-        }
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists");
-        }
+    public void handleValidUniqueLoginAndEmail(String login, String email) {
+        userValidator.validateUser(login, email, false);
     }
+
+    public void foundEmail(String email) {
+        userValidator.validateUser(null, email, true);
+    }
+
 }
