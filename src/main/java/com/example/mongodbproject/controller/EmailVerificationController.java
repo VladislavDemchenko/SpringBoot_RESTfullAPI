@@ -19,34 +19,19 @@ public class EmailVerificationController {
 
     @GetMapping("save/verify-email")
     public ResponseEntity<?> saveVerifyEmail(@RequestParam String token) {
-        if (verificationService.validateToken(token)) {
-
-            userService.save(verificationService.findUserByToken(token));
-            verificationService.deleteToken(token);
-
-            return new ResponseEntity<>("Verification successfully" , HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("Invalid Verification code", HttpStatus.BAD_REQUEST);
-        }
+            return verificationService.responseValidationTokenHandler(token, () ->{
+                userService.save(verificationService.findUserByToken(token));
+                return new ResponseEntity<>("Verification successfully", HttpStatus.CREATED);
+            });
     }
+
     @GetMapping("updatePassword/verify-email")
     public ResponseEntity<?> updatePasswordVerifyEmail(@RequestParam String token) {
-        if (verificationService.validateToken(token)) {
-            ////////// refactor to extract method like in book catalog
-
+        return verificationService.responseValidationTokenHandler(token, () -> {
             User user = verificationService.findUserByToken(token);
-
-            userService.updateUserPasswordByEmail(user.getEmail(),
-                    user.getPassword());
-
-            verificationService.deleteToken(token);
-
+            userService.updateUserPasswordByEmail(user.getEmail(), user.getPassword());
             return new ResponseEntity<>("Verification successfully", HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>("Invalid Verification code", HttpStatus.BAD_REQUEST);
-        }
+        });
     }
-
-
 }
 

@@ -21,14 +21,15 @@ public class UserService {
 
     @Cacheable(value = "userByLogin", key = "#userRequestArgs.login")
     public UserDto login(User userRequestArgs) {
-        UserDto userDto = castToUserDto(userRepository.findByLogin(userRequestArgs.getLogin())
-                .orElseThrow(() -> new NoSuchElementException("Login or email is not valid")));
+        User user = userRepository.findByLogin(userRequestArgs.getLogin())
+                .orElseThrow(() -> new NoSuchElementException("Login is not valid"));
 
-        if(!userDto.password().equals(userRequestArgs.getPassword())){
+        if(!user.getPassword().equals(userRequestArgs.getPassword())){
             throw new IncorrectPasswordException("Password is incorrect");
         }
 
-        return userDto;
+        // cast to UserDto
+        return new UserDto(user.getLogin(), user.getEmail());
     }
 
     public void updateUserPasswordByEmail(String email, String newPassword) {
@@ -43,8 +44,5 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Email is unverified"));
     }
-    //todo: think about logic of method login - with cast in Class or cast in repository
-    public UserDto castToUserDto(User user){
-        return new UserDto(user.getLogin(), user.getPassword(), user.getEmail());
-    }
+
 }

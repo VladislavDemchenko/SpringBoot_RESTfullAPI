@@ -21,9 +21,8 @@ public class UserController {
     public ResponseEntity<?> create(@RequestBody User userRegisterData){
 
         temporaryDataService.handleValidUniqueLoginAndEmail(userRegisterData.getLogin(), userRegisterData.getEmail());
-        temporaryDataService.saveTemporaryData(userRegisterData, "save");
 
-        return new ResponseEntity<>("Pre-verification data saved", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(temporaryDataService.saveTemporaryData(userRegisterData, "save"), HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/login")
@@ -36,8 +35,7 @@ public class UserController {
     public ResponseEntity<?> updatePassword(@RequestParam String newPassword, @RequestParam String email){
 
         temporaryDataService.foundEmail(email);
-        temporaryDataService.saveTemporaryData(new User(email, newPassword), "updatePassword");
 
-        return new ResponseEntity<>("Pre-verification data saved", HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(temporaryDataService.saveTemporaryData(new User(newPassword, email), "updatePassword"), HttpStatus.ACCEPTED);
     }
 }
